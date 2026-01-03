@@ -1,6 +1,6 @@
 # 多阶段构建
 # 构建阶段
-FROM maven:3.8.6-openjdk-8-slim AS builder
+FROM maven:3.8.6-eclipse-temurin-8 AS builder
 
 # 设置工作目录
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # 生产阶段
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:8-jdk-alpine
 
 # 安装curl用于健康检查
 RUN apk --no-cache add curl
