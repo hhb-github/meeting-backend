@@ -1,0 +1,139 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: meeting-manager
+  
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/meeting_manager?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+  
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 500MB
+      max-request-size: 500MB
+  
+  # Jackson配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+# 日志配置
+logging:
+  level:
+    com.meeting.manager: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/meeting-manager.log
+
+# 文件上传路径
+file:
+  upload:
+    path: /Users/huo/Documents/work/ai-workspace/meeting/uploads/
+
+# AI服务配置
+langchain4j:
+  # 通义千问Max API配置
+  openai:
+    api-key: ${OPENAI_API_KEY:sk-ad82ed8f9a4c4b27a641a8a3c24cb4a3}
+    base-url: ${OPENAI_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode/v1}
+    chat-model:
+      model-name: ${OPENAI_CHAT_MODEL:qwen3-max}
+      max-tokens: 4000
+      temperature: 0.2
+    embedding-model:
+      model-name: ${OPENAI_EMBEDDING_MODEL:text-embedding-v2}
+      dimensions: 1536
+  # 百炼平台配置
+  bailian:
+    api-key: ${BAILIAN_API_KEY:sk-ad82ed8f9a4c4b27a641a8a3c24cb4a3}
+    base-url: ${BAILIAN_BASE_URL:https://dashscope.aliyuncs.com/bailian/v1}
+    chat-model:
+      model-name: ${BAILIAN_CHAT_MODEL:qwen-max}
+      max-tokens: 4000
+      temperature: 0.2
+  
+  # 请求超时设置
+  request:
+    connect-timeout: 30000
+    read-timeout: 300000
+
+# 异步任务配置
+task:
+  execution:
+    pool:
+      core-size: 5
+      max-size: 20
+      queue-capacity: 100
+  scheduling:
+    pool:
+      size: 5
+
+# 处理配置
+processing:
+  # 音频转文字配置
+  speech-to-text:
+    # 支持的语言列表
+    supported-languages: zh-CN,zh-TW,en-US
+    # 默认语言
+    default-language: zh-CN
+    # 最大文件大小（MB）
+    max-file-size: 500
+    # 最大处理时长（分钟）
+    max-processing-time: 60
+  
+  # 文档提取配置
+  document-extraction:
+    # 支持的文档格式
+    supported-formats: txt,doc,docx,pdf
+    # 最大文件大小（MB）
+    max-file-size: 100
+  
+  # 会议分析配置
+  meeting-analysis:
+    # 模型最大token数
+    max-tokens: 4000
+    # 温度参数
+    temperature: 0.2
+    # 重试次数
+    retry-count: 3
+    # 重试间隔（秒）
+    retry-interval: 5
+
+# 缓存配置
+cache:
+  # Redis缓存配置（如需使用）
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: ${REDIS_DB:0}
+    timeout: ${REDIS_TIMEOUT:2000}ms
+  # 本地缓存配置
+  local:
+    # 缓存失效时间（秒）
+    expire-time: 300
+    # 最大缓存大小
+    max-size: 1000

@@ -1,0 +1,147 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.springBeans
+.sts4-cache/
+
+# Java
+*.class
+*.log
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+
+# Spring Boot
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Application specific
+logs/
+*.log
+uploads/
+*.txt
+*.pdf
+*.doc
+*.docx
+*.mp3
+*.wav
+*.m4a
+*.mp4
+*.avi
+*.mov
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Testing
+target/
+surefire-reports/
+test-output/
+cobertura/
+.arquillian/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Package Files
+*.zip
+*.tar.gz
+*.jar
+*.war
+*.ear
+*.aar
+*.nar
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# JRebel
+rebel.xml
+
+# Spring Boot
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Application specific
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+# Application logs
+logs/
+meeting-manager.log*
+*.log
+
+# Session data
+sessions/
+
+# Application uploaded files
+uploads/*
+!uploads/.gitkeep
+
+# Application specific database files
+*.h2.db
+*.mv.db
+
+# Cache
+.cache/
+*.cache
+
+# Backup files
+*.bak
+*.backup
+
+# Application specific temporary files
+temp/
+tmp/

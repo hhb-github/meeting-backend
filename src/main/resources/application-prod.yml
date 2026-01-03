@@ -1,0 +1,102 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: meeting-manager
+  
+  # 生产环境数据库配置
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:meeting_manager}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+
+  # 日志配置
+  logging:
+    level:
+      com.meeting.manager: INFO
+      org.springframework.web: INFO
+      org.hibernate.SQL: WARN
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file:
+      name: /app/logs/meeting-manager.log
+
+# 自定义配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# 文件存储配置
+app:
+  file:
+    # 本地存储路径（容器内）
+    storage-path: /app/data/files
+    # 临时文件路径
+    temp-path: /app/data/temp
+    # 支持的文件类型
+    allowed-types: pdf,doc,docx,txt,wav,mp3,mp4,mov,avi
+    # 最大文件大小（字节）
+    max-file-size: 104857600  # 100MB
+  
+  # AI服务配置
+  ai:
+    # 通义千问API配置
+    dashscope:
+      api-key: ${AI_API_KEY:your-api-key-here}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      model: qwen-plus
+      max-tokens: 4000
+      temperature: 0.7
+    
+    # 语音转文字服务配置
+    speech:
+      provider: ${SPEECH_PROVIDER:aliyun}
+      aliyun:
+        access-key-id: ${ALIYUN_ACCESS_KEY_ID:your-access-key}
+        access-key-secret: ${ALIYUN_ACCESS_KEY_SECRET:your-secret}
+        region: ${ALIYUN_REGION:cn-shanghai}
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.meeting.manager: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    name: /app/logs/application.log
+    max-size: 100MB
+    max-history: 30
