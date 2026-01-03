@@ -1,5 +1,7 @@
 package com.meeting.manager.entity;
 
+import com.meeting.manager.enums.DecisionStatus;
+import com.meeting.manager.enums.DecisionPriority;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -87,13 +89,5 @@ public class MeetingDecision {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-    
-    public enum DecisionStatus {
-        PENDING, APPROVED, REJECTED, IMPLEMENTED
-    }
-    
-    public enum DecisionPriority {
-        HIGH, MEDIUM, LOW
     }
 }

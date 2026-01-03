@@ -1,5 +1,7 @@
 package com.meeting.manager.entity;
 
+import com.meeting.manager.enums.SourceType;
+import com.meeting.manager.enums.ProcessingStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -104,13 +106,5 @@ public class MeetingRecord {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-    
-    public enum SourceType {
-        AUDIO, DOCUMENT
-    }
-    
-    public enum ProcessingStatus {
-        PENDING, PROCESSING, COMPLETED, FAILED
     }
 }

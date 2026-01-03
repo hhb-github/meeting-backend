@@ -1,5 +1,7 @@
 package com.meeting.manager.entity;
 
+import com.meeting.manager.enums.ActionPriority;
+import com.meeting.manager.enums.ActionItemStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -78,13 +80,5 @@ public class MeetingActionItem {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-    
-    public enum ActionItemStatus {
-        PENDING, IN_PROGRESS, COMPLETED, OVERDUE
-    }
-    
-    public enum ActionPriority {
-        HIGH, MEDIUM, LOW
     }
 }

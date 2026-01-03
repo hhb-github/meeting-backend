@@ -1,5 +1,7 @@
 package com.meeting.manager.entity;
 
+import com.meeting.manager.enums.FollowUpStatus;
+import com.meeting.manager.enums.FollowUpPriority;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -78,13 +80,5 @@ public class MeetingFollowUp {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-    
-    public enum FollowUpStatus {
-        OPEN, IN_PROGRESS, COMPLETED, CANCELLED
-    }
-    
-    public enum FollowUpPriority {
-        HIGH, MEDIUM, LOW
     }
 }
