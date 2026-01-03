@@ -37,14 +37,16 @@ public class MeetingActionItem {
     @Column(name = "department", length = 100)
     private String department;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "priority")
-    private String priority;
+    private ActionPriority priority;
     
     @Column(name = "due_date")
     private LocalDateTime dueDate;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private ActionItemStatus status;
     
     @Column(name = "completion_date")
     private LocalDateTime completionDate;
@@ -76,5 +78,9 @@ public class MeetingActionItem {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    
+    public enum ActionItemStatus {
+        PENDING, IN_PROGRESS, COMPLETED, OVERDUE
     }
 }

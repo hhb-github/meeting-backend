@@ -49,8 +49,9 @@ public class MeetingFollowUp {
     @Column(name = "priority")
     private String priority;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private FollowUpStatus status;
     
     @Column(name = "target_resolution_date")
     private LocalDateTime targetResolutionDate;
@@ -66,12 +67,23 @@ public class MeetingFollowUp {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         if (status == null) {
-            status = "OPEN";
+            status = FollowUpStatus.OPEN;
+        }
+        if (priority == null) {
+            priority = FollowUpPriority.MEDIUM;
         }
     }
     
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    
+    public enum FollowUpStatus {
+        OPEN, IN_PROGRESS, COMPLETED, CANCELLED
+    }
+    
+    public enum FollowUpPriority {
+        HIGH, MEDIUM, LOW
     }
 }

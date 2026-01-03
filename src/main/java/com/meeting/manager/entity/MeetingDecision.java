@@ -73,5 +73,21 @@ public class MeetingDecision {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (status == null) {
+            status = DecisionStatus.PENDING;
+        }
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+    
+    public enum DecisionStatus {
+        PENDING, APPROVED, REJECTED, IMPLEMENTED
+    }
+    
+    public enum DecisionPriority {
+        HIGH, MEDIUM, LOW
     }
 }
