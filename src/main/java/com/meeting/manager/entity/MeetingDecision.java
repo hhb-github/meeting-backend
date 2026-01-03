@@ -43,8 +43,9 @@ public class MeetingDecision {
     @Column(name = "approval_required")
     private Boolean approvalRequired;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private DecisionStatus status;
     
     @Column(name = "decision_maker")
     private String decisionMaker;
@@ -55,8 +56,9 @@ public class MeetingDecision {
     @Column(name = "deadline")
     private LocalDateTime deadline;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "priority")
-    private String priority;
+    private DecisionPriority priority;
     
     @Column(name = "decision_makers", columnDefinition = "TEXT")
     private String decisionMakers;
@@ -70,9 +72,13 @@ public class MeetingDecision {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
         if (status == null) {
             status = DecisionStatus.PENDING;
         }

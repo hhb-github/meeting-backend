@@ -71,7 +71,7 @@ public class MeetingActionItem {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         if (status == null) {
-            status = "PENDING";
+            status = ActionItemStatus.PENDING;
         }
     }
     
@@ -82,5 +82,9 @@ public class MeetingActionItem {
     
     public enum ActionItemStatus {
         PENDING, IN_PROGRESS, COMPLETED, OVERDUE
+    }
+    
+    public enum ActionPriority {
+        HIGH, MEDIUM, LOW
     }
 }

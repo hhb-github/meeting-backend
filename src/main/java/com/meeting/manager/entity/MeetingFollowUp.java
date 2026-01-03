@@ -46,8 +46,9 @@ public class MeetingFollowUp {
     @Column(name = "department", length = 100)
     private String department;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "priority")
-    private String priority;
+    private FollowUpPriority priority;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status")

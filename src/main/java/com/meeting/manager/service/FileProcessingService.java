@@ -218,9 +218,9 @@ public class FileProcessingService {
                     .taskDescription(actionItem.getTaskDescription())
                     .responsiblePerson(actionItem.getResponsiblePerson())
                     .department(actionItem.getDepartment())
-                    .priority(actionItem.getPriority())
+                    .priority(parsePriority(actionItem.getPriority()))
                     .dueDate(actionItem.getDueDate())
-                    .status(actionItem.getStatus())
+                    .status(parseActionItemStatus(actionItem.getStatus()))
                     .progressNotes(actionItem.getProgressNotes())
                     .relatedTopicId(actionItem.getRelatedTopicId())
                     .build();
@@ -239,8 +239,8 @@ public class FileProcessingService {
                     .nextMeetingDate(followUp.getNextMeetingDate())
                     .responsiblePerson(followUp.getResponsiblePerson())
                     .department(followUp.getDepartment())
-                    .priority(followUp.getPriority())
-                    .status(followUp.getStatus())
+                    .priority(parseFollowUpPriority(followUp.getPriority()))
+                    .status(parseFollowUpStatus(followUp.getStatus()))
                     .targetResolutionDate(followUp.getTargetResolutionDate())
                     .build();
             followUpRepository.save(item);
@@ -272,6 +272,54 @@ public class FileProcessingService {
         } catch (Exception e) {
             log.warn("日期解析失败: {}", dateString);
             return null;
+        }
+    }
+
+    private MeetingActionItem.ActionPriority parsePriority(String priorityString) {
+        if (priorityString == null || priorityString.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return MeetingActionItem.ActionPriority.valueOf(priorityString.toUpperCase());
+        } catch (Exception e) {
+            log.warn("优先级解析失败: {}, 使用默认值MEDIUM", priorityString);
+            return MeetingActionItem.ActionPriority.MEDIUM;
+        }
+    }
+
+    private MeetingActionItem.ActionItemStatus parseActionItemStatus(String statusString) {
+        if (statusString == null || statusString.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return MeetingActionItem.ActionItemStatus.valueOf(statusString.toUpperCase());
+        } catch (Exception e) {
+            log.warn("行动项状态解析失败: {}, 使用默认值PENDING", statusString);
+            return MeetingActionItem.ActionItemStatus.PENDING;
+        }
+    }
+
+    private MeetingFollowUp.FollowUpPriority parseFollowUpPriority(String priorityString) {
+        if (priorityString == null || priorityString.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return MeetingFollowUp.FollowUpPriority.valueOf(priorityString.toUpperCase());
+        } catch (Exception e) {
+            log.warn("跟进优先级解析失败: {}, 使用默认值MEDIUM", priorityString);
+            return MeetingFollowUp.FollowUpPriority.MEDIUM;
+        }
+    }
+
+    private MeetingFollowUp.FollowUpStatus parseFollowUpStatus(String statusString) {
+        if (statusString == null || statusString.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return MeetingFollowUp.FollowUpStatus.valueOf(statusString.toUpperCase());
+        } catch (Exception e) {
+            log.warn("跟进状态解析失败: {}, 使用默认值OPEN", statusString);
+            return MeetingFollowUp.FollowUpStatus.OPEN;
         }
     }
 }
