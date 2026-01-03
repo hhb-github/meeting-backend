@@ -11,7 +11,7 @@ FLUSH PRIVILEGES;
 
 -- 创建表结构
 -- 会议记录表
-CREATE TABLE IF NOT EXISTS meeting_record (
+CREATE TABLE IF NOT EXISTS meeting_records (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     meeting_name VARCHAR(255) NOT NULL COMMENT '会议名称',
     meeting_topic VARCHAR(500) COMMENT '会议主题',
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS meeting_record (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会议记录表';
 
 -- 会议参与者表
-CREATE TABLE IF NOT EXISTS meeting_participant (
+CREATE TABLE IF NOT EXISTS meeting_participants (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     meeting_record_id BIGINT NOT NULL COMMENT '关联的会议记录ID',
     name VARCHAR(100) NOT NULL COMMENT '参与者姓名',
@@ -46,13 +46,13 @@ CREATE TABLE IF NOT EXISTS meeting_participant (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     
-    FOREIGN KEY (meeting_record_id) REFERENCES meeting_record(id) ON DELETE CASCADE,
+    FOREIGN KEY (meeting_record_id) REFERENCES meeting_records(id) ON DELETE CASCADE,
     INDEX idx_meeting_record_id (meeting_record_id),
     INDEX idx_name (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会议参与者表';
 
 -- 会议话题表
-CREATE TABLE IF NOT EXISTS meeting_topic (
+CREATE TABLE IF NOT EXISTS meeting_topics (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     meeting_record_id BIGINT NOT NULL COMMENT '关联的会议记录ID',
     topic_title VARCHAR(255) NOT NULL COMMENT '话题标题',
@@ -65,13 +65,13 @@ CREATE TABLE IF NOT EXISTS meeting_topic (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     
-    FOREIGN KEY (meeting_record_id) REFERENCES meeting_record(id) ON DELETE CASCADE,
+    FOREIGN KEY (meeting_record_id) REFERENCES meeting_records(id) ON DELETE CASCADE,
     INDEX idx_meeting_record_id (meeting_record_id),
     INDEX idx_topic_title (topic_title)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会议话题表';
 
 -- 会议决定表
-CREATE TABLE IF NOT EXISTS meeting_decision (
+CREATE TABLE IF NOT EXISTS meeting_decisions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     meeting_record_id BIGINT NOT NULL COMMENT '关联的会议记录ID',
     decision_content TEXT NOT NULL COMMENT '决定内容',
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS meeting_decision (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     
-    FOREIGN KEY (meeting_record_id) REFERENCES meeting_record(id) ON DELETE CASCADE,
+    FOREIGN KEY (meeting_record_id) REFERENCES meeting_records(id) ON DELETE CASCADE,
     INDEX idx_meeting_record_id (meeting_record_id),
     INDEX idx_decision_type (decision_type),
     INDEX idx_priority (priority),
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS meeting_decision (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会议决定表';
 
 -- 会议行动项表
-CREATE TABLE IF NOT EXISTS meeting_action_item (
+CREATE TABLE IF NOT EXISTS meeting_action_items (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     meeting_record_id BIGINT NOT NULL COMMENT '关联的会议记录ID',
     action_content TEXT NOT NULL COMMENT '行动项内容',
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS meeting_action_item (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     
-    FOREIGN KEY (meeting_record_id) REFERENCES meeting_record(id) ON DELETE CASCADE,
+    FOREIGN KEY (meeting_record_id) REFERENCES meeting_records(id) ON DELETE CASCADE,
     INDEX idx_meeting_record_id (meeting_record_id),
     INDEX idx_assignee (assignee),
     INDEX idx_status (status),
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS meeting_action_item (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会议行动项表';
 
 -- 会议跟进表
-CREATE TABLE IF NOT EXISTS meeting_follow_up (
+CREATE TABLE IF NOT EXISTS meeting_follow_ups (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     meeting_record_id BIGINT NOT NULL COMMENT '关联的会议记录ID',
     follow_up_content TEXT NOT NULL COMMENT '跟进内容',
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS meeting_follow_up (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     
-    FOREIGN KEY (meeting_record_id) REFERENCES meeting_record(id) ON DELETE CASCADE,
+    FOREIGN KEY (meeting_record_id) REFERENCES meeting_records(id) ON DELETE CASCADE,
     INDEX idx_meeting_record_id (meeting_record_id),
     INDEX idx_target_type_id (target_type, target_id),
     INDEX idx_status (status),
@@ -146,19 +146,19 @@ SELECT
     COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) as today_meetings,
     COUNT(CASE WHEN YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1) THEN 1 END) as this_week_meetings,
     COUNT(CASE WHEN MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE()) THEN 1 END) as this_month_meetings
-FROM meeting_record;
+FROM meeting_records;
 
 -- 创建触发器用于自动更新统计信息
 DELIMITER $$
 
-CREATE TRIGGER update_meeting_statistics AFTER INSERT ON meeting_record
+CREATE TRIGGER update_meeting_statistics AFTER INSERT ON meeting_records
 FOR EACH ROW
 BEGIN
     -- 可以在这里添加统计信息更新的逻辑
     -- 例如：更新缓存表、发送通知等
 END$$
 
-CREATE TRIGGER update_meeting_statistics_update AFTER UPDATE ON meeting_record
+CREATE TRIGGER update_meeting_statistics_update AFTER UPDATE ON meeting_records
 FOR EACH ROW
 BEGIN
     -- 处理状态变更时的逻辑
@@ -170,28 +170,28 @@ END$$
 DELIMITER ;
 
 -- 插入一些测试数据（可选）
-INSERT IGNORE INTO meeting_record (meeting_name, meeting_topic, meeting_date, location, source_type, processing_status, original_file_name) VALUES
+INSERT IGNORE INTO meeting_records (meeting_name, meeting_topic, meeting_date, location, source_type, processing_status, original_file_name) VALUES
 ('周例会', '项目进度汇报', NOW(), '会议室A', 'AUDIO', 'COMPLETED', 'weekly_meeting.wav'),
 ('需求评审会', '新产品功能讨论', NOW(), '会议室B', 'DOCUMENT', 'PROCESSING', 'requirements.docx'),
 ('技术方案讨论', '系统架构优化', NOW(), '会议室C', 'AUDIO', 'PENDING', 'tech_discussion.mp3');
 
 -- 插入对应的参与者数据
-INSERT IGNORE INTO meeting_participant (meeting_record_id, name, role, department) VALUES
+INSERT IGNORE INTO meeting_participants (meeting_record_id, name, role, department) VALUES
 (1, '张三', '项目经理', '产品部'),
 (1, '李四', '技术负责人', '技术部'),
 (2, '王五', '产品经理', '产品部'),
 (2, '赵六', 'UI设计师', '设计部');
 
 -- 插入对应的行动项数据
-INSERT IGNORE INTO meeting_action_item (meeting_record_id, action_content, assignee, priority, due_date) VALUES
+INSERT IGNORE INTO meeting_action_items (meeting_record_id, action_content, assignee, priority, due_date) VALUES
 (1, '完成项目文档更新', '张三', 'HIGH', DATE_ADD(CURDATE(), INTERVAL 7 DAY)),
 (1, '准备下周演示材料', '李四', 'MEDIUM', DATE_ADD(CURDATE(), INTERVAL 5 DAY)),
 (2, '整理用户反馈', '王五', 'HIGH', DATE_ADD(CURDATE(), INTERVAL 3 DAY));
 
 -- 创建索引以优化查询性能
-CREATE INDEX idx_meeting_record_status_date ON meeting_record(processing_status, created_at);
-CREATE INDEX idx_action_item_assignee_status ON meeting_action_item(assignee, status);
-CREATE INDEX idx_decision_status_priority ON meeting_decision(status, priority);
+CREATE INDEX idx_meeting_record_status_date ON meeting_records(processing_status, created_at);
+CREATE INDEX idx_action_item_assignee_status ON meeting_action_items(assignee, status);
+CREATE INDEX idx_decision_status_priority ON meeting_decisions(status, priority);
 
 -- 显示表创建成功信息
 SELECT 'Database initialization completed successfully!' as message;
