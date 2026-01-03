@@ -3,6 +3,7 @@ package com.meeting.manager.service;
 import com.meeting.manager.service.MeetingAnalysisService;
 import com.meeting.manager.dto.StructuredMeetingSummary;
 import com.meeting.manager.entity.*;
+import com.meeting.manager.enums.*;
 import com.meeting.manager.repository.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +68,7 @@ public class FileProcessingService {
             processFile(meetingRecordId);
         } catch (Exception e) {
             log.error("处理文件失败: {}", meetingRecordId, e);
-            updateMeetingStatus(meetingRecordId, MeetingRecord.ProcessingStatus.FAILED, e.getMessage());
+            updateMeetingStatus(meetingRecordId, ProcessingStatus.FAILED, e.getMessage());
         }
         return CompletableFuture.completedFuture(null);
     }
@@ -78,11 +79,11 @@ public class FileProcessingService {
                 .orElseThrow(() -> new RuntimeException("会议记录不存在"));
 
         try {
-            updateMeetingStatus(meetingRecordId, MeetingRecord.ProcessingStatus.PROCESSING, null);
+            updateMeetingStatus(meetingRecordId, ProcessingStatus.PROCESSING, null);
 
             String transcriptionText = null;
 
-            if (meetingRecord.getSourceType() == MeetingRecord.SourceType.AUDIO) {
+            if (meetingRecord.getSourceType() == SourceType.AUDIO) {
                 log.info("开始语音转文字处理: {}", meetingRecord.getFilePath());
                 transcriptionText = speechToTextService.convertSpeechToText(meetingRecord.getFilePath());
             } else {
@@ -103,7 +104,7 @@ public class FileProcessingService {
             log.info("生成结构化纪要");
             saveStructuredData(meetingRecord, summary);
 
-            meetingRecord.setProcessingStatus(MeetingRecord.ProcessingStatus.COMPLETED);
+            meetingRecord.setProcessingStatus(ProcessingStatus.COMPLETED);
             meetingRecord.setProcessedAt(LocalDateTime.now());
             meetingRecordRepository.save(meetingRecord);
 
@@ -111,12 +112,12 @@ public class FileProcessingService {
 
         } catch (Exception e) {
             log.error("文件处理失败", e);
-            updateMeetingStatus(meetingRecordId, MeetingRecord.ProcessingStatus.FAILED, e.getMessage());
+            updateMeetingStatus(meetingRecordId, ProcessingStatus.FAILED, e.getMessage());
             throw e;
         }
     }
 
-    private void updateMeetingStatus(Long meetingRecordId, MeetingRecord.ProcessingStatus status, String error) {
+    private void updateMeetingStatus(Long meetingRecordId, ProcessingStatus status, String error) {
         MeetingRecord meetingRecord = meetingRecordRepository.findById(meetingRecordId).orElse(null);
         if (meetingRecord != null) {
             meetingRecord.setProcessingStatus(status);
@@ -275,51 +276,51 @@ public class FileProcessingService {
         }
     }
 
-    private MeetingActionItem.ActionPriority parsePriority(String priorityString) {
+    private ActionPriority parsePriority(String priorityString) {
         if (priorityString == null || priorityString.trim().isEmpty()) {
             return null;
         }
         try {
-            return MeetingActionItem.ActionPriority.valueOf(priorityString.toUpperCase());
+            return ActionPriority.valueOf(priorityString.toUpperCase());
         } catch (Exception e) {
             log.warn("优先级解析失败: {}, 使用默认值MEDIUM", priorityString);
-            return MeetingActionItem.ActionPriority.MEDIUM;
+            return ActionPriority.MEDIUM;
         }
     }
 
-    private MeetingActionItem.ActionItemStatus parseActionItemStatus(String statusString) {
+    private ActionItemStatus parseActionItemStatus(String statusString) {
         if (statusString == null || statusString.trim().isEmpty()) {
             return null;
         }
         try {
-            return MeetingActionItem.ActionItemStatus.valueOf(statusString.toUpperCase());
+            return ActionItemStatus.valueOf(statusString.toUpperCase());
         } catch (Exception e) {
             log.warn("行动项状态解析失败: {}, 使用默认值PENDING", statusString);
-            return MeetingActionItem.ActionItemStatus.PENDING;
+            return ActionItemStatus.PENDING;
         }
     }
 
-    private MeetingFollowUp.FollowUpPriority parseFollowUpPriority(String priorityString) {
+    private FollowUpPriority parseFollowUpPriority(String priorityString) {
         if (priorityString == null || priorityString.trim().isEmpty()) {
             return null;
         }
         try {
-            return MeetingFollowUp.FollowUpPriority.valueOf(priorityString.toUpperCase());
+            return FollowUpPriority.valueOf(priorityString.toUpperCase());
         } catch (Exception e) {
             log.warn("跟进优先级解析失败: {}, 使用默认值MEDIUM", priorityString);
-            return MeetingFollowUp.FollowUpPriority.MEDIUM;
+            return FollowUpPriority.MEDIUM;
         }
     }
 
-    private MeetingFollowUp.FollowUpStatus parseFollowUpStatus(String statusString) {
+    private FollowUpStatus parseFollowUpStatus(String statusString) {
         if (statusString == null || statusString.trim().isEmpty()) {
             return null;
         }
         try {
-            return MeetingFollowUp.FollowUpStatus.valueOf(statusString.toUpperCase());
+            return FollowUpStatus.valueOf(statusString.toUpperCase());
         } catch (Exception e) {
             log.warn("跟进状态解析失败: {}, 使用默认值OPEN", statusString);
-            return MeetingFollowUp.FollowUpStatus.OPEN;
+            return FollowUpStatus.OPEN;
         }
     }
 }

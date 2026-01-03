@@ -1,6 +1,7 @@
 package com.meeting.manager.repository;
 
 import com.meeting.manager.entity.MeetingRecord;
+import com.meeting.manager.enums.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,13 +24,13 @@ public interface MeetingRecordRepository extends JpaRepository<MeetingRecord, Lo
            "(:status IS NULL OR m.processingStatus = :status)")
     Page<MeetingRecord> findByConditions(
             @Param("meetingName") String meetingName,
-            @Param("sourceType") MeetingRecord.SourceType sourceType,
+            @Param("sourceType") SourceType sourceType,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
-            @Param("status") MeetingRecord.ProcessingStatus status,
+            @Param("status") ProcessingStatus status,
             Pageable pageable);
     
-    List<MeetingRecord> findByProcessingStatus(MeetingRecord.ProcessingStatus status);
+    List<MeetingRecord> findByProcessingStatus(ProcessingStatus status);
     
     @Query("SELECT m FROM MeetingRecord m WHERE m.processingStatus = 'PROCESSING' ORDER BY m.createdAt DESC")
     List<MeetingRecord> findProcessingRecords();
@@ -45,13 +46,13 @@ public interface MeetingRecordRepository extends JpaRepository<MeetingRecord, Lo
     
     @Query("SELECT COUNT(m) FROM MeetingRecord m WHERE m.processingStatus = :status AND m.createdAt BETWEEN :startDate AND :endDate")
     Long countByProcessingStatusAndCreatedAtBetween(
-            @Param("status") MeetingRecord.ProcessingStatus status,
+            @Param("status") ProcessingStatus status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
     
     @Query("SELECT COUNT(m) FROM MeetingRecord m WHERE m.sourceType = :sourceType AND m.createdAt BETWEEN :startDate AND :endDate")
     Long countBySourceTypeAndCreatedAtBetween(
-            @Param("sourceType") MeetingRecord.SourceType sourceType,
+            @Param("sourceType") SourceType sourceType,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
 }

@@ -1,6 +1,8 @@
 package com.meeting.manager.controller;
 
 import com.meeting.manager.entity.MeetingRecord;
+import com.meeting.manager.enums.ProcessingStatus;
+import com.meeting.manager.enums.SourceType;
 import com.meeting.manager.repository.MeetingRecordRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +55,13 @@ public class DashboardController {
 
             // 查询各状态的文件数
             long pendingFiles = meetingRecordRepository.countByProcessingStatusAndCreatedAtBetween(
-                    MeetingRecord.ProcessingStatus.PENDING, startDateTime, endDateTime);
+                    ProcessingStatus.PENDING, startDateTime, endDateTime);
             long processingFiles = meetingRecordRepository.countByProcessingStatusAndCreatedAtBetween(
-                    MeetingRecord.ProcessingStatus.PROCESSING, startDateTime, endDateTime);
+                    ProcessingStatus.PROCESSING, startDateTime, endDateTime);
             long completedFiles = meetingRecordRepository.countByProcessingStatusAndCreatedAtBetween(
-                    MeetingRecord.ProcessingStatus.COMPLETED, startDateTime, endDateTime);
+                    ProcessingStatus.COMPLETED, startDateTime, endDateTime);
             long failedFiles = meetingRecordRepository.countByProcessingStatusAndCreatedAtBetween(
-                    MeetingRecord.ProcessingStatus.FAILED, startDateTime, endDateTime);
+                    ProcessingStatus.FAILED, startDateTime, endDateTime);
 
             // 查询今日处理的文件数
             LocalDateTime todayStart = LocalDate.now().atStartOfDay();
@@ -74,9 +76,9 @@ public class DashboardController {
 
             // 查询音频文件和文档文件的数量
             long audioFiles = meetingRecordRepository.countBySourceTypeAndCreatedAtBetween(
-                    MeetingRecord.SourceType.AUDIO, startDateTime, endDateTime);
+                    SourceType.AUDIO, startDateTime, endDateTime);
             long documentFiles = meetingRecordRepository.countBySourceTypeAndCreatedAtBetween(
-                    MeetingRecord.SourceType.DOCUMENT, startDateTime, endDateTime);
+                    SourceType.DOCUMENT, startDateTime, endDateTime);
 
             // 构造返回数据
             Map<String, Object> stats = new HashMap<>();
@@ -140,20 +142,25 @@ public class DashboardController {
                 recordMap.put("originalFileName", record.getOriginalFileName());
                 
                 // 计算处理进度（简单示例）
-                switch (record.getProcessingStatus()) {
-                    case PENDING:
-                        recordMap.put("progress", 0);
-                        break;
-                    case PROCESSING:
-                        recordMap.put("progress", 50);
-                        break;
-                    case COMPLETED:
-                        recordMap.put("progress", 100);
-                        break;
-                    case FAILED:
-                        recordMap.put("progress", -1);
-                        break;
+                ProcessingStatus status = record.getProcessingStatus();
+                int progress = 0;
+                if (status != null) {
+                    switch (status) {
+                        case PENDING:
+                            progress = 0;
+                            break;
+                        case PROCESSING:
+                            progress = 50;
+                            break;
+                        case COMPLETED:
+                            progress = 100;
+                            break;
+                        case FAILED:
+                            progress = -1;
+                            break;
+                    }
                 }
+                recordMap.put("progress", progress);
                 
                 return recordMap;
             }).collect(java.util.stream.Collectors.toList());

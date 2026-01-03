@@ -2,6 +2,8 @@ package com.meeting.manager.controller;
 
 import com.meeting.manager.dto.FileUploadRequest;
 import com.meeting.manager.entity.*;
+import com.meeting.manager.enums.ProcessingStatus;
+import com.meeting.manager.enums.SourceType;
 import com.meeting.manager.repository.*;
 import com.meeting.manager.service.FileProcessingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -80,7 +82,7 @@ public class MeetingRecordController {
             meetingRecord.setMeetingDate(meetingDate);
             meetingRecord.setOriginalFileName(file.getOriginalFilename());
             meetingRecord.setSourceType(determineSourceType(file.getOriginalFilename()));
-            meetingRecord.setProcessingStatus(MeetingRecord.ProcessingStatus.PENDING);
+            meetingRecord.setProcessingStatus(ProcessingStatus.PENDING);
             meetingRecord.setCreatedAt(LocalDateTime.now());
             meetingRecord.setUpdatedAt(LocalDateTime.now());
 
@@ -138,8 +140,8 @@ public class MeetingRecordController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> getMeetingRecords(
             @RequestParam(value = "meetingName", required = false) String meetingName,
-            @RequestParam(value = "sourceType", required = false) MeetingRecord.SourceType sourceType,
-            @RequestParam(value = "status", required = false) MeetingRecord.ProcessingStatus status,
+            @RequestParam(value = "sourceType", required = false) SourceType sourceType,
+            @RequestParam(value = "status", required = false) ProcessingStatus status,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
@@ -461,7 +463,7 @@ public class MeetingRecordController {
         }
         
         MeetingRecord record = recordOptional.get();
-        record.setProcessingStatus(MeetingRecord.ProcessingStatus.PENDING);
+        record.setProcessingStatus(ProcessingStatus.PENDING);
         record.setUpdatedAt(LocalDateTime.now());
         meetingRecordRepository.save(record);
         
@@ -531,7 +533,7 @@ public class MeetingRecordController {
         sb.append("会议主题: ").append(record.getMeetingTopic()).append("\n");
         sb.append("会议时间: ").append(record.getMeetingDate() != null ? record.getMeetingDate().toString() : "未知").append("\n");
         sb.append("会议地点: ").append(record.getLocation() != null ? record.getLocation() : "未知").append("\n");
-        sb.append("文件来源: ").append(record.getSourceType() == MeetingRecord.SourceType.AUDIO ? "语音文件" : "文档文件").append("\n");
+        sb.append("文件来源: ").append(record.getSourceType() == SourceType.AUDIO ? "语音文件" : "文档文件").append("\n");
         sb.append("\n=== 参会人员 ===\n");
         
         // 添加参会人员信息
@@ -614,18 +616,16 @@ public class MeetingRecordController {
         return sb.toString();
     }
 
-    private MeetingRecord.SourceType determineSourceType(String fileName) {
+    private SourceType determineSourceType(String fileName) {
         if (fileName == null) {
-            return MeetingRecord.SourceType.DOCUMENT;
+            return SourceType.DOCUMENT;
         }
         
-        String lowerFileName = fileName.toLowerCase();
-        if (lowerFileName.endsWith(".mp3") || lowerFileName.endsWith(".wav") || 
-            lowerFileName.endsWith(".m4a") || lowerFileName.endsWith(".flac")) {
-            return MeetingRecord.SourceType.AUDIO;
+        String extension = fileName.toLowerCase();
+        if (extension.endsWith(".mp3") || extension.endsWith(".wav") || extension.endsWith(".m4a")) {
+            return SourceType.AUDIO;
         }
-        
-        return MeetingRecord.SourceType.DOCUMENT;
+        return SourceType.DOCUMENT;
     }
 
     // 内部类用于解析JSON
